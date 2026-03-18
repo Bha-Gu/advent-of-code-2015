@@ -15,6 +15,51 @@ fn problem1(input: &str) -> usize {
         .sum::<usize>()
 }
 
+#[allow(dead_code)]
+const fn problem1_const(input: &str) -> usize {
+    let input = input.as_bytes();
+    let len = input.len();
+    let mut i = 0;
+    let mut sum = 0;
+
+    while i < len {
+        let mut nums: [Option<_>; 3] = [None; 3];
+        while i < len {
+            let mut num = 0;
+            while i < len {
+                if input[i] == b'x' || input[i] == b'\n' {
+                    break;
+                }
+                num = num * 10 + (input[i] as char).to_digit(10).unwrap() as usize;
+                i += 1;
+            }
+            if nums[0].is_none() {
+                nums[0] = Some(num);
+            } else if nums[1].is_none() {
+                nums[1] = Some(num);
+            } else {
+                nums[2] = Some(num);
+            }
+            if i >= len || input[i] == b'\n' {
+                break;
+            }
+            i += 1;
+        }
+        let (a, b, c) = (
+            nums[0].unwrap() * nums[1].unwrap(),
+            nums[0].unwrap() * nums[2].unwrap(),
+            nums[1].unwrap() * nums[2].unwrap(),
+        );
+        sum += 2 * (a + b + c);
+        let min = if b < c { b } else { c };
+        let min = if a < min { a } else { min };
+        sum += min;
+        i += 1;
+    }
+
+    sum
+}
+
 fn problem2(input: &str) -> usize {
     input
         .lines()
@@ -24,7 +69,7 @@ fn problem2(input: &str) -> usize {
                 .collect::<Vec<_>>()
         })
         .map(|n| {
-            use std::cmp::Ordering::*;
+            use std::cmp::Ordering::Greater;
             let (a, b, c) = (n[0], n[1], n[2]);
             (match (a.cmp(&b), a.cmp(&c)) {
                 (Greater, Greater) => b + c,
@@ -33,6 +78,52 @@ fn problem2(input: &str) -> usize {
                 + a * b * c
         })
         .sum::<usize>()
+}
+
+#[allow(dead_code)]
+const fn problem2_const(input: &str) -> usize {
+    let input = input.as_bytes();
+    let len = input.len();
+    let mut i = 0;
+    let mut sum = 0;
+
+    while i < len {
+        let mut nums: [Option<_>; 3] = [None; 3];
+        while i < len {
+            let mut num = 0;
+            while i < len {
+                if input[i] == b'x' || input[i] == b'\n' {
+                    break;
+                }
+                num = num * 10 + (input[i] as char).to_digit(10).unwrap() as usize;
+                i += 1;
+            }
+            if nums[0].is_none() {
+                nums[0] = Some(num);
+            } else if nums[1].is_none() {
+                nums[1] = Some(num);
+            } else {
+                nums[2] = Some(num);
+            }
+            if i >= len || input[i] == b'\n' {
+                break;
+            }
+            i += 1;
+        }
+        let (a, b, c) = (nums[0].unwrap(), nums[1].unwrap(), nums[2].unwrap());
+        sum += (if a > b && a > c {
+            b + c
+        } else if b > c {
+            a + c
+        } else {
+            a + b
+        }) * 2
+            + a * b * c;
+
+        i += 1;
+    }
+
+    sum
 }
 
 day!(
