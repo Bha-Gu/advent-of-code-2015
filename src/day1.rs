@@ -11,6 +11,23 @@ fn problem_1(input: &str) -> isize {
         .sum()
 }
 
+#[allow(dead_code)]
+const fn problem_1_const(input: &str) -> isize {
+    let len = input.len();
+    let mut sum = 0;
+    let input = input.as_bytes();
+    let mut i = 0;
+    while i < len {
+        match input[i] {
+            b'(' => sum += 1,
+            b')' => sum -= 1,
+            _ => {}
+        }
+        i += 1;
+    }
+    sum
+}
+
 fn problem_2(input: &str) -> usize {
     input
         .chars()
@@ -29,6 +46,28 @@ fn problem_2(input: &str) -> usize {
         })
         .count()
         + 1
+}
+
+#[allow(dead_code)]
+const fn problem_2_const(input: &str) -> usize {
+    let input = input.as_bytes();
+    let len = input.len();
+    let mut result = 0;
+    let mut total = 0;
+    let mut i = 0;
+    while i < len {
+        match input[i] {
+            b'(' => total += 1,
+            b')' => total -= 1,
+            _ => {}
+        }
+        result += 1;
+        if total < 0 {
+            break;
+        }
+        i += 1;
+    }
+    result
 }
 
 day!(
