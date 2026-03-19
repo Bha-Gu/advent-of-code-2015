@@ -15,6 +15,38 @@ fn problem1(input: &str) -> usize {
         .sum::<usize>()
 }
 
+const fn integer_parser(i: &mut usize, len: usize, input: &[u8]) -> usize {
+    let mut num = 0;
+    while *i < len {
+        if input[*i] == b'x' || input[*i] == b'\n' {
+            break;
+        }
+        num = num * 10 + (input[*i] - b'0') as usize;
+        *i += 1;
+    }
+    num
+}
+
+const fn line_parser(i: &mut usize, len: usize, input: &[u8]) -> [usize; 3] {
+    let mut nums: [Option<_>; 3] = [None; 3];
+    while *i < len {
+        let num = integer_parser(i, len, input);
+
+        if nums[0].is_none() {
+            nums[0] = Some(num);
+        } else if nums[1].is_none() {
+            nums[1] = Some(num);
+        } else {
+            nums[2] = Some(num);
+        }
+        if *i >= len || input[*i] == b'\n' {
+            break;
+        }
+        *i += 1;
+    }
+    [nums[0].unwrap(), nums[1].unwrap(), nums[2].unwrap()]
+}
+
 #[allow(dead_code)]
 const fn problem1_const(input: &str) -> usize {
     let input = input.as_bytes();
@@ -23,33 +55,9 @@ const fn problem1_const(input: &str) -> usize {
     let mut sum = 0;
 
     while i < len {
-        let mut nums: [Option<_>; 3] = [None; 3];
-        while i < len {
-            let mut num = 0;
-            while i < len {
-                if input[i] == b'x' || input[i] == b'\n' {
-                    break;
-                }
-                num = num * 10 + (input[i] as char).to_digit(10).unwrap() as usize;
-                i += 1;
-            }
-            if nums[0].is_none() {
-                nums[0] = Some(num);
-            } else if nums[1].is_none() {
-                nums[1] = Some(num);
-            } else {
-                nums[2] = Some(num);
-            }
-            if i >= len || input[i] == b'\n' {
-                break;
-            }
-            i += 1;
-        }
-        let (a, b, c) = (
-            nums[0].unwrap() * nums[1].unwrap(),
-            nums[0].unwrap() * nums[2].unwrap(),
-            nums[1].unwrap() * nums[2].unwrap(),
-        );
+        let nums: [usize; 3] = line_parser(&mut i, len, input);
+
+        let (a, b, c) = (nums[0] * nums[1], nums[0] * nums[2], nums[1] * nums[2]);
         sum += 2 * (a + b + c);
         let min = if b < c { b } else { c };
         let min = if a < min { a } else { min };
@@ -88,29 +96,9 @@ const fn problem2_const(input: &str) -> usize {
     let mut sum = 0;
 
     while i < len {
-        let mut nums: [Option<_>; 3] = [None; 3];
-        while i < len {
-            let mut num = 0;
-            while i < len {
-                if input[i] == b'x' || input[i] == b'\n' {
-                    break;
-                }
-                num = num * 10 + (input[i] as char).to_digit(10).unwrap() as usize;
-                i += 1;
-            }
-            if nums[0].is_none() {
-                nums[0] = Some(num);
-            } else if nums[1].is_none() {
-                nums[1] = Some(num);
-            } else {
-                nums[2] = Some(num);
-            }
-            if i >= len || input[i] == b'\n' {
-                break;
-            }
-            i += 1;
-        }
-        let (a, b, c) = (nums[0].unwrap(), nums[1].unwrap(), nums[2].unwrap());
+        let nums: [usize; 3] = line_parser(&mut i, len, input);
+
+        let (a, b, c) = (nums[0], nums[1], nums[2]);
         sum += (if a > b && a > c {
             b + c
         } else if b > c {
